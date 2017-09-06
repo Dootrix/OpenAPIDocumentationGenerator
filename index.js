@@ -127,141 +127,93 @@ Handlebars.registerHelper('example', function(context) {
 });
 
 var definitionFile = process.argv.length > 2 ? process.argv[2] : "./definition.yaml";
+var templateFile = process.argv.length > 3 ? process.argv[3] : "./template.mustache";
+
+var readFileAsync = function (file){
+    return new Promise(function(resolve,reject){
+        fs.readFile(templateFile, 'utf8', function (err,data) {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
+        });
+    });
+};
+
+var writeFileAsync = function(file, contents) {
+    return new Promise(function(resolve,reject){
+        fs.writeFile(file, contents, function(err) {
+            if(err) {
+                reject(err);
+            }
+
+            resolve(contents);
+        })
+    });
+};
+
+var createPdfAsync = function(htmlString, options, outputFile) {
+    return new Promise(function(resolve,reject){
+        pdf.create(htmlString, options).toFile(outputFile, function(err, res) {
+            if (err)
+            {
+                console.log('Error generating pdf:');
+                return reject(err);
+            }
+            resolve(res.filename); 
+        });
+    });
+};
 
 SwaggerParser.dereference(definitionFile)
   .then(function(api) {
-        
-    var source = `
-    <!DOCTYPE html>
-    <html lang="en">
-        <head>
-            <base href="`+getFileUrl()+`/"/>
-            <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
-            <link rel="stylesheet" href="main.css">
-        </head>
-        <body>
-            <div class="container">
+    return readFileAsync(templateFile)
+            .then(function(template){
+                api.buildFolder = getFileUrl();
+                return { definition: api, template: template }
+            });
+  })
+  .then(function(api) {
 
-                <h1>{{info.title}}</h1>
+    var template = Handlebars.compile(api.template);
+    var html = template(api.definition);
 
-                <p>{{markdown info.description}}</p>
-                
-                <hr class="chapterSeparator"/>
-                
-                <h1>Endpoints</h1>
-                {{#each paths}}
-                
-                <section>
-                    <h2>{{@key}}</h2>
-                    {{#each this}}
-                    
-                    <div class="group">
-                        <h3>{{@key}}</h3>
-                        <p class="url">{{@root.schemes.[0]}}://{{@root.host}}{{@root.basePath}}{{@../key}}{{exampleQuery parameters}}</p>
-                    </div>
-                    
-                    <p>{{description}}</p>
-                    
-                    <div class="group">
-                        <h4>Parameters</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Type</th>
-                                    <th>In</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{#each parameters}}
-                                <tr>
-                                    <td>{{name}}</td>
-                                    <td>
-                                        {{description}}
-                                        {{#is in o="body"}}<pre>{{example schema}}</pre>{{/is}}
-                                    </td>
-                                    <td>
-                                        {{#if format}}{{format}}{{/if}}
-                                        {{#unless format}}{{type}}{{/unless}}
-                                    </td>    
-                                    <td>{{in}}</td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    {{#each responses}}
-                        
-                        <div class="group">
-                            {{#if @first}}
-                            <h4>Responses</h4>
-                            {{/if}}
-                            
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">{{@key}} <small>{{description}}</small></h3>
-                                </div>
-                                <div class="panel-body">
-                                    <pre>{{example schema}}</pre>
-                                </div>
-                            </div>
-                        </div>
-                    {{/each}}
-                {{/each}}
-                </section>
-                {{/each}}
-            </div>
-            <div id="pageHeader" style="font-family:'Helvetica Neue', Helvetica, Arial, 'sans-serif';">
-                <p style="display: block;background:url('{{fileUrl "logo.jpg"}}') no-repeat top right;background-size:contain;">
-                    Example Web Services Reference
-                </p>
-                <hr/>
-            </div>
-            <div id="pageFooter" style=\'font-family:"Helvetica Neue", Helvetica, Arial, "sans-serif";\'>
-                <div style="width:50%;float:left;">&#169; Example Ltd</div>
-                <div style="width:50%;float:left;text-align:right">{{brace "page"}}</div>
-            </div>
-        </body>
-    </html>`;
-    
-    var template = Handlebars.compile(source);
-    
-    var html = template(api);
-
-    fs.writeFile("./output.html", html, function(err) {
-        if(err) {
+    return writeFileAsync("./output.html", html)
+        .catch(function(err){
             console.log('Error generating html:');
-            return console.log(err);
-        }
+            console.log(err);
+        })
+        .then(function(html) {
+            console.log("Html output generated");
 
-        console.log("Html output generated (" + __dirname + "\\output.html)");
-    });
-    
-    var options = {
-        "format": 'Letter',
-        "base": getFileUrl(),
-        "border": {
-            "top": "0mm", 
-            "right": "15mm",
-            "bottom": "0mm",
-            "left": "15mm"
-        },
-        "header": {
-            "height": "28mm",
-        },
-        "footer": {
-            "height": "20mm",
-        },
-    };
+            var options = {
+                "format": 'Letter',
+                "base": getFileUrl(),
+                "border": {
+                    "top": "0mm", 
+                    "right": "15mm",
+                    "bottom": "0mm",
+                    "left": "15mm"
+                },
+                "header": {
+                    "height": "28mm",
+                },
+                "footer": {
+                    "height": "20mm",
+                },
+            };
 
-    pdf.create(html, options).toFile('./output.pdf', function(err, res) {
-        if (err)
-        {
-            console.log('Error generating pdf:');
-            return console.log(err);
-        }
-        console.log('Pdf output generated (' + res.filename + ')'); 
-    });
+            return createPdfAsync(html, options, './output.pdf')
+                .catch(function(err){
+                    console.log('Error generating pdf:');
+                    console.log(err);
+                })
+                .then(function(filename) {
+                    console.log('Pdf output generated (' + filename + ')'); 
+                })
+        });
+  })
+  .catch(function(err) {
+      console.log("Error generating output:");
+      console.log(err);
   });

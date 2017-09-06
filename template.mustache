@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <base href="{{buildFolder}}"/>
+        <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body>
+        <div class="container">
+
+            <h1>{{info.title}}</h1>
+
+            <p>{{markdown info.description}}</p>
+            
+            <hr class="chapterSeparator"/>
+            
+            <h1>Endpoints</h1>
+            {{#each paths}}
+            
+            <section>
+                <h2>{{@key}}</h2>
+                {{#each this}}
+                
+                <div class="group">
+                    <h3>{{@key}}</h3>
+                    <p class="url">{{@root.schemes.[0]}}://{{@root.host}}{{@root.basePath}}{{@../key}}{{exampleQuery parameters}}</p>
+                </div>
+                
+                <p>{{description}}</p>
+                
+                <div class="group">
+                    <h4>Parameters</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>In</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each parameters}}
+                            <tr>
+                                <td>{{name}}</td>
+                                <td>
+                                    {{description}}
+                                    {{#is in o="body"}}<pre>{{example schema}}</pre>{{/is}}
+                                </td>
+                                <td>
+                                    {{#if format}}{{format}}{{/if}}
+                                    {{#unless format}}{{type}}{{/unless}}
+                                </td>    
+                                <td>{{in}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {{#each responses}}
+                    
+                    <div class="group">
+                        {{#if @first}}
+                        <h4>Responses</h4>
+                        {{/if}}
+                        
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">{{@key}} <small>{{description}}</small></h3>
+                            </div>
+                            <div class="panel-body">
+                                <pre>{{example schema}}</pre>
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+            {{/each}}
+            </section>
+            {{/each}}
+        </div>
+        <div id="pageHeader" style="font-family:'Helvetica Neue', Helvetica, Arial, 'sans-serif';">
+            <p style="display: block;background:url('{{fileUrl "logo.jpg"}}') no-repeat top right;background-size:contain;">
+                Example Web Services Reference
+            </p>
+            <hr/>
+        </div>
+        <div id="pageFooter" style=\'font-family:"Helvetica Neue", Helvetica, Arial, "sans-serif";\'>
+            <div style="width:50%;float:left;">&#169; Example Ltd</div>
+            <div style="width:50%;float:left;text-align:right">{{brace "page"}}</div>
+        </div>
+    </body>
+</html>
