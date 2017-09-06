@@ -1,0 +1,19 @@
+{
+  "name": "swagger-doc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "handlebars": "^4.0.5",
+    "html-pdf": "^2.0.1",
+    "marked": "^0.3.5",
+    "swagger-parser": "^3.4.1"
+  }
+}

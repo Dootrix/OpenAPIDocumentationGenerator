@@ -1,0 +1,39 @@
+swagger: '2.0'
+info:
+  title: 'Example: 1'
+  version: 1.0.0
+  description: |
+    #### Base URL ####
+    This is an example swagger document
+host: 'api.example.net'
+basePath: '/v2/api'
+produces:
+ - application/json
+consumes:
+ - application/json
+schemes:
+ - https
+tags:
+ - name: Example
+paths:
+  /example:
+    get:
+      description: |
+        Example endpoint
+      operationId: 'example'
+      tags:
+        - Example
+      parameters:
+        - name: ExampleId
+          in: query
+          required: true
+          type: string
+          description: The example id.
+      responses:
+        '200':
+          description: "The successful response"
+          schema:
+            type: object
+            properties:
+              name:
+                type: string

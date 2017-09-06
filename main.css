@@ -1,0 +1,34 @@
+.hidden {
+    display:none;
+}
+
+.panel pre {
+    border: none;
+    background: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+}
+
+section {
+    page-break-before: always;
+}
+
+.panel, pre, blockquote, .group {
+    page-break-inside: avoid;
+}
+
+.url {
+    word-break: keep-all;
+}
+
+h1 + section {
+    page-break-before: avoid;
+}
+
+.chapterSeparator {
+    page-break-before: always;
+    visibility:hidden;
+    height:1px;
+}
