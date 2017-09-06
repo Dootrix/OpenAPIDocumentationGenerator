@@ -9,8 +9,8 @@ function getFileUrl(path) {
     return 'file:///' + __dirname.split("\\").join("/") + "/" + (path || "");
 }
 
-function getFolder(file) {
-    return path.dirname(path.resolve(file)) + '\\';
+function getFolderUrl(file) {
+    return 'file:///' + path.dirname(path.resolve(file)) + '/';
 }
 
 function getBootstrapUrl() {
@@ -18,7 +18,7 @@ function getBootstrapUrl() {
     var bootstrapImport = require.resolve(bootstrapModule);
     var moduleNameIndex = bootstrapImport.indexOf(bootstrapModule);
 
-    return bootstrapImport.substring(0, moduleNameIndex + bootstrapModule.length);
+    return 'file:///' + bootstrapImport.substring(0, moduleNameIndex + bootstrapModule.length);
 }
 
 Handlebars.registerHelper('fileUrl', function(context) {
@@ -186,7 +186,7 @@ var generate = function(definitionFile, templateFile) {
         .then(function(api) {
         return readFileAsync(templateFile)
                 .then(function(template){
-                    api.buildFolder = getFolder(templateFile);
+                    api.buildFolder = getFolderUrl(templateFile);
                     api.bootstrap = getBootstrapUrl();
                     return { definition: api, template: template }
                 });
@@ -206,7 +206,7 @@ var generate = function(definitionFile, templateFile) {
 
                 var options = {
                     "format": 'Letter',
-                    "base": getFolder(templateFile),
+                    "base": getFolderUrl(templateFile),
                     "border": {
                         "top": "0mm", 
                         "right": "15mm",
