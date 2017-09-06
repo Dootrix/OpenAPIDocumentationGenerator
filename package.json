@@ -1,14 +1,14 @@
 {
-  "name": "swagger-doc",
+  "name": "openapi-doc-gen",
   "version": "1.0.0",
-  "description": "",
+  "description": "A small node app that allows PDF documentation to be generated from a swagger document.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Dootrix Ltd",
+  "license": "MIT",
   "dependencies": {
     "bootstrap": "^3.3.6",
     "handlebars": "^4.0.5",
