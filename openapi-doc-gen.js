@@ -206,7 +206,7 @@ var generate = function(definitionFile, templateFile) {
 
                 var options = {
                     "format": 'Letter',
-                    "base": getFileUrl(templateFile),
+                    "base": getFolder(templateFile),
                     "border": {
                         "top": "0mm", 
                         "right": "15mm",
