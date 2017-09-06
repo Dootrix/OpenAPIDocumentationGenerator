@@ -10,3 +10,20 @@ The output is generated via handlebars templates and the `html-to-pdf` package t
 `html-to-pdf` allows for a per page header and footer based on `id="pageHeader"` and `id="pageFooter"` in the document.  Note that these are hoisted out of the html and therefore do not take any css classes with them (only inline styles).
 
 `main.css` contains additional styling (on top of the boostrap defaults) particularly with regard to use of page-break-inside/page-break-before/page-break-after to organise the pdf pages.
+
+## NPM
+
+### Installation
+
+`npm install Dootrix/OpenAPIDocumentationGenerator`
+
+### Usage
+
+```
+var openApiDocGen = require('openapi-doc-gen');
+
+var definitionFile = "./definition.yaml";
+var templateFile = "./templatre.mustache";
+
+openApiDocGen(definitionFile, templateFile);
+```
