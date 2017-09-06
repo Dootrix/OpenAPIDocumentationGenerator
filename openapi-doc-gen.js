@@ -182,6 +182,11 @@ var generate = function(definitionFile, templateFile) {
         templateFile = __dirname + "/template.mustache";
     }
 
+    SwaggerParser.bundle(definitionFile)
+        .then(function(api) {
+            return writeFileAsync('./dereferenced-definition.json', JSON.stringify(api))
+        });
+
     SwaggerParser.dereference(definitionFile)
         .then(function(api) {
         return readFileAsync(templateFile)
