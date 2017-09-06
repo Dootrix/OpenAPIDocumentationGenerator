@@ -4,7 +4,7 @@
   "description": "A small node app that allows PDF documentation to be generated from a swagger document.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node start.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dootrix Ltd",

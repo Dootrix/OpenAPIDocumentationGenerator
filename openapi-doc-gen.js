@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var SwaggerParser = require('swagger-parser');
 var marked = require('marked');
 var Handlebars = require('handlebars');
@@ -6,6 +7,18 @@ var pdf = require('html-pdf');
 
 function getFileUrl(path) {
     return 'file:///' + __dirname.split("\\").join("/") + "/" + (path || "");
+}
+
+function getFolder(file) {
+    return path.dirname(path.resolve(file)) + '\\';
+}
+
+function getBootstrapUrl() {
+    var bootstrapModule = 'bootstrap';
+    var bootstrapImport = require.resolve(bootstrapModule);
+    var moduleNameIndex = bootstrapImport.indexOf(bootstrapModule);
+
+    return bootstrapImport.substring(0, moduleNameIndex + bootstrapModule.length);
 }
 
 Handlebars.registerHelper('fileUrl', function(context) {
@@ -164,11 +177,17 @@ var createPdfAsync = function(htmlString, options, outputFile) {
 
 var generate = function(definitionFile, templateFile) {
 
+    // If no template use the default
+    if(!templateFile) {
+        templateFile = __dirname + "/template.mustache";
+    }
+
     SwaggerParser.dereference(definitionFile)
         .then(function(api) {
         return readFileAsync(templateFile)
                 .then(function(template){
-                    api.buildFolder = getFileUrl();
+                    api.buildFolder = getFolder(templateFile);
+                    api.bootstrap = getBootstrapUrl();
                     return { definition: api, template: template }
                 });
         })
@@ -187,7 +206,7 @@ var generate = function(definitionFile, templateFile) {
 
                 var options = {
                     "format": 'Letter',
-                    "base": getFileUrl(),
+                    "base": getFileUrl(templateFile),
                     "border": {
                         "top": "0mm", 
                         "right": "15mm",
