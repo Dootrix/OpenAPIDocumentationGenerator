@@ -126,7 +126,9 @@ Handlebars.registerHelper('example', function(context) {
     return JSON.stringify(exampleSchema(context), null, ' ');
 });
 
-SwaggerParser.dereference("./definition.yaml")
+var definitionFile = process.argv.length > 2 ? process.argv[2] : "./definition.yaml";
+
+SwaggerParser.dereference(definitionFile)
   .then(function(api) {
         
     var source = `
